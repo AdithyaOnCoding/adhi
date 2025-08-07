@@ -1,0 +1,117 @@
+--                                                           Assignment for Day 3 of Learning SQL
+
+-- This file contains a set of SQL queries for a simple social media reactions database.
+-- The queries are organized to demonstrate a variety of fundamental SQL commands.
+
+-- =======================================================
+-- 1. Setting Up the Database
+-- =======================================================
+
+-- First, let's create our 'reaction' table. This is where we'll store all the user interactions.
+-- We'll include columns for things like the user's name, the type of reaction (like, love, angry),
+-- a mood level, and a comment if they've left one.
+CREATE TABLE reaction (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_name VARCHAR(100),
+    reaction_type VARCHAR(20),
+    post_id INT,
+    created_at DATETIME,
+    location VARCHAR(100),
+    mood_level INT,
+    comment TEXT
+);
+
+-- Now, let's populate our table with some sample data. This gives us something to practice with!
+INSERT INTO reaction (user_name, reaction_type, post_id, created_at, location, mood_level, comment) VALUES
+('Alice', 'like', 101, '2025-08-07 10:15:00', 'New York', 8, 'Nice post!'),
+('Bob', 'love', 102, '2025-08-06 14:20:00', 'Los Angeles', 9, 'Awesome!'),
+('Charlie', 'angry', 101, '2025-08-05 09:10:00', 'Chicago', 3, NULL),
+('Diana', 'wow', 103, '2025-08-07 08:30:00', 'Miami', 7, 'Interesting point.'),
+('Ethan', 'sad', 104, '2025-08-04 16:45:00', 'Dallas', 2, NULL),
+('Fiona', 'love', 102, '2025-08-07 12:00:00', 'Boston', 6, 'Well said.'),
+('George', 'like', 105, '2025-08-03 11:25:00', 'Seattle', 5, NULL),
+('Hannah', 'like', 106, '2025-08-07 15:50:00', 'Denver', 9, 'Completely agree!'),
+('Ian', 'angry', 107, '2025-08-06 13:15:00', 'Phoenix', 4, 'Not okay with this.'),
+('Jane', 'sad', 108, '2025-08-02 18:40:00', 'Atlanta', 1, NULL),
+('Sam', 'like', 101, '2025-08-07 10:50:00', 'New York', 8, '🔥🔥🔥'),
+('Anita', 'wow', 109, '2025-08-01 20:10:00', 'Houston', 7, NULL),
+('Brian', 'love', 110, '2025-08-07 09:05:00', 'San Francisco', 10, 'Fantastic work!'),
+('Catherine', 'like', 111, '2025-08-07 08:55:00', 'New York', 6, NULL),
+('Daniel', 'angry', 112, '2025-08-05 17:35:00', 'Chicago', 2, NULL);
+
+
+-- =======================================================
+-- 2. Basic Selection & Aliases
+-- =======================================================
+
+-- Let's see everything in our new table.
+SELECT * FROM reaction;
+
+-- Find all reactions by users whose names start with the letter 'A'.
+SELECT * FROM reaction WHERE user_name LIKE 'A%';
+
+-- Use an alias to make the output headers more descriptive. Here, 'user_name' becomes 'Reactor' and 'reaction_type' becomes 'Type'.
+SELECT user_name AS Reactor, reaction_type AS Type FROM reaction;
+
+
+-- =======================================================
+-- 3. Filtering Data with the WHERE Clause
+-- =======================================================
+
+-- Find reactions where the mood level is between 4 and 8. The BETWEEN operator is great for this!
+SELECT * FROM reaction WHERE mood_level BETWEEN 4 AND 8;
+
+-- Get all reactions that are both a 'like' and have a mood level greater than 7. We use AND to combine conditions.
+SELECT * FROM reaction WHERE reaction_type = 'like' AND mood_level > 7;
+
+-- Show reactions that are either 'love' or 'angry'. The OR operator lets us check for multiple values.
+SELECT * FROM reaction WHERE reaction_type = 'love' OR reaction_type = 'angry';
+-- This is a cleaner way to write the same query using the IN operator:
+SELECT * FROM reaction WHERE reaction_type IN ('love', 'angry');
+
+-- This query finds all reactions that are not 'sad'. We can use NOT to exclude data.
+SELECT * FROM reaction WHERE NOT reaction_type = 'sad';
+
+-- Find all reactions where the type is 'like', 'wow', or 'love' using the convenient IN operator.
+SELECT * FROM reaction WHERE reaction_type IN ('like', 'wow', 'love');
+
+-- Display all reactions where a comment was not provided (the comment field is NULL).
+SELECT * FROM reaction WHERE comment IS NULL;
+
+-- This is the opposite—it finds all reactions that actually have a comment.
+SELECT * FROM reaction WHERE comment IS NOT NULL;
+
+-- Find all reactions that aren't on posts with specific IDs.
+SELECT * FROM reaction WHERE post_id NOT IN (101, 20, 30);
+
+
+-- =======================================================
+-- 4. Using Functions to Manipulate Data
+-- =======================================================
+
+-- Show all the usernames, but this time in all capital letters.
+SELECT UPPER(user_name) FROM reaction;
+
+-- And here we do the same, but with all reaction types in lowercase.
+SELECT LOWER(reaction_type) FROM reaction;
+
+-- Use the LENGTH() function to find users whose names have 6 or more characters.
+SELECT user_name FROM reaction WHERE LENGTH(user_name) >= 6;
+
+-- Find all reactions submitted today. CURDATE() is a great function for this!
+SELECT * FROM reaction WHERE DATE(created_at) = CURDATE();
+
+-- Just get the day of the month from the 'created_at' timestamp.
+SELECT DAY(created_at) FROM reaction;
+
+-- Find all users whose name contains the substring 'an' anywhere in the name.
+SELECT user_name FROM reaction WHERE user_name LIKE '%an%';
+
+-- This query calculates and displays each user's mood level rounded to the nearest 5.
+SELECT user_name, mood_level, ROUND(mood_level / 5) * 5 AS rounded_mood_level FROM reaction;
+
+-- Combine functions to get the first two letters of each username and make them uppercase.
+SELECT UPPER(SUBSTR(user_name, 1, 2)) AS initials FROM reaction;
+
+-- Finally, let's count how many reactions have no comment.
+SELECT COUNT(*) FROM reaction WHERE comment IS NULL;
